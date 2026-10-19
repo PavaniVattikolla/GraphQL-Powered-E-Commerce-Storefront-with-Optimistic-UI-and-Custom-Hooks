@@ -1,0 +1,63 @@
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type Rating {
+  rate: Float
+  count: Int
+}
+
+type Product {
+  id: ID!
+  title: String!
+  price: Float!
+  description: String!
+  category: String!
+  image: String!
+  rating: Rating
+}
+
+type ProductEdge {
+  cursor: String!
+  node: Product!
+}
+
+type ProductConnection {
+  edges: [ProductEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CartItem {
+  id: ID!
+  productId: ID!
+  product: Product
+  quantity: Int!
+}
+
+type Cart {
+  id: ID!
+  items: [CartItem!]!
+  totalCount: Int!
+  totalPrice: Float!
+}
+
+type Category {
+  name: String!
+  products: [Product!]!
+}
+
+type Query {
+  products(first: Int!, after: String): ProductConnection!
+  product(id: ID!): Product
+  productSearch(query: String!): [Product]
+  productsByIds(ids: [ID!]!): [Product]
+  categories(names: [String!]!): [Category]
+  cart: Cart!
+}
+
+type Mutation {
+  addToCart(productId: ID!): Cart!
+  removeFromCart(itemId: ID!): Cart!
+  clearCart: Cart!
+}

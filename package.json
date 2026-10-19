@@ -1,0 +1,19 @@
+{
+  "name": "graphql-ecommerce-storefront",
+  "version": "1.0.0",
+  "description": "GraphQL-Powered E-Commerce Storefront with Optimistic UI, Custom Hooks, and DataLoader",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/system.test.js",
+    "test:api": "cd api && npm test && node test/introspection.test.js",
+    "test:frontend": "cd frontend && npm test",
+    "test:all": "node test/system.test.js && cd api && npm test && node test/introspection.test.js && cd ../frontend && npm test",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
+  },
+  "dependencies": {
+    "graphql": "^16.10.0",
+    "graphql-yoga": "^5.11.1"
+  }
+}

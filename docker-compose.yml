@@ -1,0 +1,42 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ecommerce-api
+    ports:
+      - "${API_PORT:-4000}:4000"
+    environment:
+      - NODE_ENV=production
+      - API_PORT=4000
+      - FAKESTORE_API_URL=${FAKESTORE_API_URL:-https://fakestoreapi.com}
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:4000/graphql', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({query: '{__typename}'}) }).then(res => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:4000/graphql}
+    container_name: ecommerce-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - FRONTEND_PORT=3000
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:4000/graphql}
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+    restart: unless-stopped
